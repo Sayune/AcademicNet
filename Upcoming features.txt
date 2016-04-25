@@ -1,0 +1,10 @@
+* RGB images input 
+* Verify Structure
+* gradCheck
+* SGD Optimizer
+* WeightDecay
+* Droupout
+* UI
+* Confidence Intervals
+* Data Augmentation
+* Savenet and export learned features

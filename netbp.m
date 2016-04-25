@@ -17,10 +17,11 @@ while(not(net.layers{l}.type=='c' || net.layers{l}.type=='s' ) && l>=2)
 end
 %l indexes last C/S-Layer & l+1 indexes first F/O-Layer
 %bp to Last C-layer connexion
+dm=(net.layers{l+1}.w)'*net.layers{l+1}.d;
 if (net.layers{l}.type=='s')
-    net.layers{l}.dm=(net.layers{l+1}.w)'*net.layers{l+1}.d;
+    net.layers{l}.dm=dm;
 elseif (net.layers{l}.type=='c')
-    net.layers{l}.dm=(net.layers{l+1}.w)'*(net.layers{l+1}.d).*net.layers{l}.activfun.dfun(net.layers{l}.am);
+    net.layers{l}.dm=dm.*(net.layers{l}.activfun.dfun(net.layers{l}.am));
 elseif (net.layers{l}.type=='i')
 else
     error (str2cat('Network badly configured at layer',num2str(l)))
@@ -42,7 +43,7 @@ end
 for s = l-1: -1 : 2
     if (net.layers{s+1}.type=='s') % c->s
         for j = 1 : net.layers{s}.outputmaps
-            net.layers{s}.d{j} = net.layers{s}.a{j} .* (1 - net.layers{s}.a{j}) .* (expand(net.layers{s + 1}.d{j}, [net.layers{s + 1}.scale net.layers{s + 1}.scale 1]) / net.layers{s + 1}.scale ^ 2);
+            net.layers{s}.d{j} = net.layers{s}.activfun.dfun(net.layers{s}.a{j}).* (expand(net.layers{s + 1}.d{j}, [net.layers{s + 1}.scale net.layers{s + 1}.scale 1]) / net.layers{s + 1}.scale ^ 2);
         end
     elseif (net.layers{s+1}.type=='c') %We assume only c ->c and c->s cases
         for i = 1:net.layers{s}.outputmaps
